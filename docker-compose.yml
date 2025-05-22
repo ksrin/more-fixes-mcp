@@ -1,0 +1,40 @@
+services:
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - DATABASE_URL=postgresql://postgrescvedumper:a42a18537d74c3b7e584c769152c3d@10.37.32.4:5432/vuln-db
+      - QUERY_PROCESSOR_URL=http://query-processor:5000
+    depends_on:
+      - query-processor
+
+  query-processor:
+    build: ./query-processor
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./query-processor:/app
+
+  mcp-server:
+    build: ./mcp-server
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./mcp-server:/app
+    environment:
+      - DATABASE_URL=postgresql://postgrescvedumper:a42a18537d74c3b7e584c769152c3d@10.37.32.4:5432/vuln-db
+    
